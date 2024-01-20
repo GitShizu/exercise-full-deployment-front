@@ -1,6 +1,7 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-const { VITE_PORT } = import.meta.env
+import { Link } from "react-router-dom"
+const { VITE_API_URL } = import.meta.env
 export default () => {
 
     const [albums, setAlbums] = useState([])
@@ -9,36 +10,59 @@ export default () => {
         musician: '',
         duration_seconds: 0
     })
+    const [feedback, setFeedback] = useState();
     const [refresh, setRefresh] = useState(true)
     useEffect(() => {
-        axios.get(`${VITE_PORT}/albums`)
-            .then(obj =>setAlbums(obj.data)
+        axios.get(`${VITE_API_URL}/albums`)
+            .then(obj => setAlbums(obj.data)
             )
             .catch(e => console.error(e))
     }, [refresh])
 
     const addAlbum = (body) => {
-        axios.post(`${VITE_PORT}/albums`, body)
+        axios.post(`${VITE_API_URL}/albums`, body)
             .then(() => {
                 setRefresh(!refresh)
+                setFeedback('Album added successfully')
             })
-            .catch(e => console.error(e))
+            .catch(e => {
+                setFeedback('Please insert a valid musician stage name')
+                console.error(e.message)
+            })
+    }
+
+    const deleteAlbum = (id) => {
+        axios.delete(`${VITE_API_URL}/albums/${id}`)
+            .then(() => {
+                setFeedback('Album deleted successfully')
+                setRefresh(!refresh)
+            }).catch(e => console.error(e.message))
     }
 
     return (
-        <section className="page">
+        <section >
 
             {albums.length === 0 ?
                 <h1>Loading...</h1>
                 :
-                <section >
+                <section className="page">
                     <div className="list">
                         <h2>Albums list</h2>
                         <ul>
                             {albums.map((a, i) => {
                                 return (
                                     <li key={i}>
-                                        {`Title: ${a.title}, Author: ${a.musician && a.musician.stageName}, duration: ${a.duration_seconds}s`}
+                                        <Link 
+                                        to={`/albums/${a._id}`}
+                                        className={'link'}>
+                                            {`Title: ${a.title}, Author: ${a.musician && a.musician.stageName}, duration: ${a.duration_seconds}s`}
+                                        </Link>
+                                        <button
+                                            className="remove_btn"
+                                            onClick={() => {
+                                                deleteAlbum(a._id)
+                                            }}
+                                        >Remove</button>
                                     </li>
                                 )
 
@@ -47,7 +71,7 @@ export default () => {
                     </div>
                     <div className="add-new">
                         <h2>Add new album</h2>
-                        <label >Title__
+                        <label> <b>Title</b>
                             <input
                                 value={formData.title}
                                 onChange={e => setFormData({
@@ -56,7 +80,7 @@ export default () => {
                                 })}
                                 type="text" />
                         </label>
-                        <label >Author__
+                        <label ><b>Musician</b>
                             <input
                                 value={formData.musician}
                                 onChange={e => setFormData({
@@ -65,7 +89,7 @@ export default () => {
                                 })}
                                 type="text" />
                         </label>
-                        <label >Duration (sec)__
+                        <label ><b>Duration (sec)</b>
                             <input
                                 onChange={e => setFormData({
                                     ...formData,
@@ -78,6 +102,9 @@ export default () => {
                         <button
                             onClick={() => { addAlbum(formData) }}
                         >Add</button>
+                        <div>
+                            {feedback}
+                        </div>
                     </div>
                 </section>
             }
