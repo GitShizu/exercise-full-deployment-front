@@ -1,4 +1,5 @@
 import axios from "axios";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 const { VITE_API_URL } = import.meta.env;
@@ -22,7 +23,7 @@ export default () => {
                     <h1>{musician.stageName}</h1>
                     <h2>{musician.firstName}</h2>
                     <h2>{musician.lastName}</h2>
-                    <h2>{musician.birthDate}</h2>
+                    <h2>{dayjs(musician.birthDate).format('DD-MM-YYYY')}</h2>
                     <figure>
                         <img src={`${musician.img}`} alt="musician's headshot" />
                     </figure>

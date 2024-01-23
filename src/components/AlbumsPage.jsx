@@ -5,11 +5,21 @@ const { VITE_API_URL } = import.meta.env
 export default () => {
 
     const [albums, setAlbums] = useState([])
+    const [musicians, setMusicians] = useState([])
+
     const [formData, setFormData] = useState({
         title: '',
         musician: '',
         duration_seconds: 0
     })
+
+    let isFormValid = formData.title.trim().length>0 && formData.musician !== '' && formData.duration_seconds>1;
+
+    const blankFormData = {
+        title: '',
+        musician: '',
+        duration_seconds: 0
+    }
     const [feedback, setFeedback] = useState();
     const [refresh, setRefresh] = useState(true)
     useEffect(() => {
@@ -19,11 +29,19 @@ export default () => {
             .catch(e => console.error(e))
     }, [refresh])
 
+    useEffect(() => {
+        axios.get(`${VITE_API_URL}/musicians`)
+            .then(obj => setMusicians(obj.data)
+            )
+            .catch(e => console.error(e))
+    }, [])
+
     const addAlbum = (body) => {
         axios.post(`${VITE_API_URL}/albums`, body)
-            .then(() => {
+            .then((obj) => {
                 setRefresh(!refresh)
                 setFeedback('Album added successfully')
+                
             })
             .catch(e => {
                 setFeedback('Please insert a valid musician stage name')
@@ -38,7 +56,7 @@ export default () => {
                 setRefresh(!refresh)
             }).catch(e => console.error(e.message))
     }
-
+    
     return (
         <section >
 
@@ -52,9 +70,9 @@ export default () => {
                             {albums.map((a, i) => {
                                 return (
                                     <li key={i}>
-                                        <Link 
-                                        to={`/albums/${a._id}`}
-                                        className={'link'}>
+                                        <Link
+                                            to={`/albums/${a._id}`}
+                                            className={'link'}>
                                             {`Title: ${a.title}, Author: ${a.musician && a.musician.stageName}, duration: ${a.duration_seconds}s`}
                                         </Link>
                                         <button
@@ -81,13 +99,26 @@ export default () => {
                                 type="text" />
                         </label>
                         <label ><b>Musician</b>
-                            <input
-                                value={formData.musician}
-                                onChange={e => setFormData({
-                                    ...formData,
+                            <select
+                            value={formData.musician}
+                            onChange={(e)=>{
+                                setFormData({
+                                    ...formData, 
                                     musician: e.target.value
+                                })
+                            }}
+                            >
+                                <option value="">Select musician</option>
+                                {musicians.map(m => {
+                                    return (
+                                        <option
+                                            key={m._id}
+                                            value={m._id}
+                                        >{m.stageName}
+                                        </option>
+                                    )
                                 })}
-                                type="text" />
+                            </select>
                         </label>
                         <label ><b>Duration (sec)</b>
                             <input
@@ -100,7 +131,11 @@ export default () => {
                         </label>
 
                         <button
-                            onClick={() => { addAlbum(formData) }}
+                            disabled={!isFormValid}
+                            onClick={() => { 
+                                addAlbum(formData) 
+                                setFormData(blankFormData)    
+                            }}
                         >Add</button>
                         <div>
                             {feedback}

@@ -72,7 +72,7 @@ export default () => {
                         </ul>
                     </div>
                     <div className="add-new">
-                        <h2>Add new album</h2>
+                        <h2>Add new musician</h2>
                         <label> <b>Stage Name</b>
                             <input
                                 value={formData.stageName}
