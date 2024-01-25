@@ -1,13 +1,14 @@
 import axios from "axios";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 const { VITE_API_URL } = import.meta.env;
 
 export default () => {
 
-    const { id } = useParams()
+    const { slug } = useParams()
     const [musician, setMusician] = useState()
+    const navigate = useNavigate()
     const blankFormData = {
         stageName: '',
         firstName: '',
@@ -19,7 +20,7 @@ export default () => {
     const [refresh, setRefresh] = useState(false)
 
     useEffect(() => {
-        axios.get(`${VITE_API_URL}/musicians/${id}`)
+        axios.get(`${VITE_API_URL}/musicians/${slug}`)
             .then(obj => setMusician(obj.data))
     }, [refresh])
 
@@ -30,19 +31,19 @@ export default () => {
                 validProps[key] = value
             }
         })
-       if(Object.keys(validProps).length>0){
+        if (Object.keys(validProps).length > 0) {
 
-           axios.patch(`${VITE_API_URL}/musicians/${id}`, validProps)
-               .then(() => {
-                   setFeedback('Musician updated successfully')
-                   setRefresh(!refresh)
-               })
-               .catch(e => {
-                   setFeedback('Please insert valid data')
-                   console.error(e.message)
-               })
-               
-       }
+            axios.patch(`${VITE_API_URL}/musicians/${slug}`, validProps)
+                .then((obj) => {
+                    setFeedback('Musician updated successfully')
+                    setMusician(obj.data)
+                    setRefresh(!refresh)
+                })
+                .catch(e => {
+                    setFeedback('Please insert valid data')
+                    console.error(e.message)
+                })
+        }
     }
 
     return (
@@ -59,7 +60,7 @@ export default () => {
                         <figure className="details-img">
                             <img src={`${musician.img}`} alt="musician's headshot" />
                         </figure>
-                        <ul>{musician.albums.map((a, i) => {
+                        <ul>{musician.albums?.map((a, i) => {
                             return (
                                 <li key={`album_${i}`}>
                                     {a.title}
@@ -107,8 +108,8 @@ export default () => {
                                     type="date" />
                             </label>
                             <button
-                                onClick={() => { 
-                                    editMusician(formData) 
+                                onClick={() => {
+                                    editMusician(formData)
                                     setFormData(blankFormData)
                                 }}
                             >Edit</button>

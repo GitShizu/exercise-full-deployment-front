@@ -9,7 +9,7 @@ export default () => {
         stageName: '',
         firstName: '',
         lastName: '',
-        birthDate: '' 
+        birthDate: ''
     })
 
     const [feedback, setFeedback] = useState();
@@ -33,8 +33,8 @@ export default () => {
             })
     }
 
-    const deleteMusician = (id) => {
-        axios.delete(`${VITE_API_URL}/musicians/${id}`)
+    const deleteMusician = (slug) => {
+        axios.delete(`${VITE_API_URL}/musicians/${slug}`)
             .then(() => {
                 setFeedback('Musician deleted successfully')
                 setRefresh(!refresh)
@@ -43,11 +43,12 @@ export default () => {
 
     return (
         <section >
+            <section className="page">
+                {musicians === undefined && <p>Loading...</p>}
+                {musicians.length < 1 ?
+                    <p>No musicians found</p>
+                    :
 
-            {musicians.length === 0 ?
-                <h1>Loading...</h1>
-                :
-                <section className="page">
                     <div className="list">
                         <h2>musicians list</h2>
                         <ul>
@@ -55,14 +56,14 @@ export default () => {
                                 return (
                                     <li key={i}>
                                         <Link
-                                            to={`/musicians/${m._id}`}
+                                            to={`/musicians/${m.slug}`}
                                             className={'link'}>
                                             {`${m.stageName} | ${m.albums.map(a => a.title)}`}
                                         </Link>
                                         <button
                                             className="remove_btn"
                                             onClick={() => {
-                                                deleteMusician(m._id)
+                                                deleteMusician(m.slug)
                                             }}
                                         >Remove</button>
                                     </li>
@@ -71,55 +72,57 @@ export default () => {
                             })}
                         </ul>
                     </div>
-                    <div className="add-new">
-                        <h2>Add new musician</h2>
-                        <label> <b>Stage Name</b>
-                            <input
-                                value={formData.stageName}
-                                onChange={e => setFormData({
-                                    ...formData,
-                                    stageName: e.target.value
-                                })}
-                                type="text" />
-                        </label>
-                        <label ><b>First Name</b>
-                            <input
-                                value={formData.firstName}
-                                onChange={e => setFormData({
-                                    ...formData,
-                                    firstName: e.target.value
-                                })}
-                                type="text" />
-                        </label>
-                        <label ><b>Last Name</b>
-                            <input
-                                onChange={e => setFormData({
-                                    ...formData,
-                                    lastName: e.target.value
-                                })}
-                                value={formData.duration_seconds}
-                                type="text" />
-                        </label>
-                        <label ><b>Birth date</b>
-                            <input
-                                onChange={e => setFormData({
-                                    ...formData,
-                                    birthDate: e.target.value
-                                })}
-                                value={formData.birthDate}
-                                type="date" />
-                        </label>
-                        <button
-                            onClick={() => { addMusician(formData) }}
-                        >Add</button>
-                        <div>
-                            {feedback}
-                        </div>
-                    </div>
-                </section>
-            }
 
+
+                }
+                <div className="add-new">
+                    <h2>Add new musician</h2>
+                    <label> <b>Stage Name</b>
+                        <input
+                            value={formData.stageName}
+                            onChange={e => setFormData({
+                                ...formData,
+                                stageName: e.target.value
+                            })}
+                            type="text" />
+                    </label>
+                    <label ><b>First Name</b>
+                        <input
+                            value={formData.firstName}
+                            onChange={e => setFormData({
+                                ...formData,
+                                firstName: e.target.value
+                            })}
+                            type="text" />
+                    </label>
+                    <label ><b>Last Name</b>
+                        <input
+                            onChange={e => setFormData({
+                                ...formData,
+                                lastName: e.target.value
+                            })}
+                            value={formData.duration_seconds}
+                            type="text" />
+                    </label>
+                    <label ><b>Birth date</b>
+                        <input
+                            onChange={e => setFormData({
+                                ...formData,
+                                birthDate: e.target.value
+                            })}
+                            value={formData.birthDate}
+                            type="date" />
+                    </label>
+                    <button
+                        onClick={() => { addMusician(formData) }}
+                    >Add</button>
+                    <div>
+                        {feedback}
+                    </div>
+                </div>
+            </section>
         </section>
 
     )
 }
+

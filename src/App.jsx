@@ -27,11 +27,14 @@ function App() {
       </nav>
       <Routes>
         <Route path={'/'} element={<HomePage />} />
-        <Route path={'/musicians'} element={<MusiciansPage />} />
-        <Route path={'/musicians/:id'} element={<MusicianDetails/>}/>
-        <Route path={'/albums'} element={<AlbumsPage />} />
-        <Route path={'/albums/:id'} element={<AlbumDetails/>}/>
-        
+        <Route path={'/musicians'} >
+          <Route index element={<MusiciansPage />} />
+          <Route path={':slug'} element={<MusicianDetails />} />
+        </Route>
+        <Route path={'/albums'}>
+          <Route index element={<AlbumsPage/>}/>
+          <Route path={':slug'} element={<AlbumDetails />} />
+        </Route>
       </Routes>
     </section>
   )

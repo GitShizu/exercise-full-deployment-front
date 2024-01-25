@@ -48,8 +48,8 @@ export default () => {
             })
     }
 
-    const deleteAlbum = (id) => {
-        axios.delete(`${VITE_API_URL}/albums/${id}`)
+    const deleteAlbum = (slug) => {
+        axios.delete(`${VITE_API_URL}/albums/${slug}`)
             .then(() => {
                 setFeedback('Album deleted successfully')
                 setRefresh(!refresh)
@@ -73,14 +73,14 @@ export default () => {
                                     return (
                                         <li key={i}>
                                             <Link
-                                                to={`/albums/${a._id}`}
+                                                to={`/albums/${a.slug}`}
                                                 className={'link'}>
                                                 {`Title: ${a.title}, Author: ${a.musician && a.musician.stageName}, duration: ${a.duration_seconds}s`}
                                             </Link>
                                             <button
                                                 className="remove_btn"
                                                 onClick={() => {
-                                                    deleteAlbum(a._id)
+                                                    deleteAlbum(a.slug)
                                                 }}
                                             >Remove</button>
                                         </li>

@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom"
 const { VITE_API_URL } = import.meta.env;
 export default () => {
 
-    const { id } = useParams()
+    const { slug } = useParams()
     const [album, setAlbum] = useState()
     const blankFormData = {
         title: '',
@@ -17,7 +17,7 @@ export default () => {
     const [refresh, setRefresh] = useState(false)
 
     useEffect(() => {
-        axios.get(`${VITE_API_URL}/albums/${id}`)
+        axios.get(`${VITE_API_URL}/albums/${slug}`)
             .then(obj => setAlbum(obj.data))
     }, [refresh])
 
@@ -37,7 +37,7 @@ export default () => {
         })
         if (Object.keys(validProps).length > 0) {
 
-            axios.patch(`${VITE_API_URL}/albums/${id}`, validProps)
+            axios.patch(`${VITE_API_URL}/albums/${slug}`, validProps)
                 .then(() => {
                     setFeedback('Album updated successfully')
                     setRefresh(!refresh)
@@ -46,10 +46,10 @@ export default () => {
                     setFeedback('Please insert valid data')
                     console.error(e.message)
                 })
-            
+
         }
     }
-    
+
 
     return (
         <>
@@ -77,27 +77,27 @@ export default () => {
                                 type="text" />
                         </label>
                         <label ><b>Musician</b>
-                        <select
-                            value={formData.musician}
-                            onChange={(e) => {
-                                setFormData({
-                                    ...formData,
-                                    musician: e.target.value
-                                })
-                            }}
-                        >
-                            <option value="">Select musician</option>
-                            {musicians.map(m => {
-                                return (
-                                    <option
-                                        key={m._id}
-                                        value={m._id}
-                                    >{m.stageName}
-                                    </option>
-                                )
-                            })}
-                        </select>
-                    </label>
+                            <select
+                                value={formData.musician}
+                                onChange={(e) => {
+                                    setFormData({
+                                        ...formData,
+                                        musician: e.target.value
+                                    })
+                                }}
+                            >
+                                <option value="">Select musician</option>
+                                {musicians.map(m => {
+                                    return (
+                                        <option
+                                            key={m._id}
+                                            value={m.slug}
+                                        >{m.stageName}
+                                        </option>
+                                    )
+                                })}
+                            </select>
+                        </label>
                         <label ><b>duration (sec)</b>
                             <input
                                 onChange={e => setFormData({
