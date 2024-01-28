@@ -6,6 +6,7 @@ import AlbumsPage from './components/AlbumsPage'
 import MusiciansPage from './components/MusiciansPage'
 import AlbumDetails from './components/AlbumDetails'
 import MusicianDetails from './components/MusicianDetails'
+import NotFound from './components/NotFound'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -32,9 +33,10 @@ function App() {
           <Route path={':slug'} element={<MusicianDetails />} />
         </Route>
         <Route path={'/albums'}>
-          <Route index element={<AlbumsPage/>}/>
+          <Route index element={<AlbumsPage />} />
           <Route path={':slug'} element={<AlbumDetails />} />
         </Route>
+        <Route path={'*'} element={<NotFound />} />
       </Routes>
     </section>
   )

@@ -2,13 +2,13 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import NotFound from "./NotFound";
 const { VITE_API_URL } = import.meta.env;
 
 export default () => {
 
     const { slug } = useParams()
     const [musician, setMusician] = useState()
-    const navigate = useNavigate()
     const blankFormData = {
         stageName: '',
         firstName: '',
@@ -18,11 +18,20 @@ export default () => {
     const [formData, setFormData] = useState(blankFormData)
     const [feedback, setFeedback] = useState()
     const [refresh, setRefresh] = useState(false)
+    const [error, setError] = useState(false)
+    const navigate = useNavigate()
 
     useEffect(() => {
         axios.get(`${VITE_API_URL}/musicians/${slug}`)
-            .then(obj => setMusician(obj.data))
-    }, [refresh])
+            .then(obj => {
+                setMusician(obj.data)
+                console.log(obj)
+            })
+            .catch((e)=>{
+                console.error(e.message)
+                setError(true)
+            })
+            }, [refresh])
 
     const editMusician = (newProps) => {
         const validProps = {}
@@ -37,18 +46,25 @@ export default () => {
                 .then((obj) => {
                     setFeedback('Musician updated successfully')
                     setMusician(obj.data)
+                    navigate(`/musicians/${obj.data.slug}`)
                     setRefresh(!refresh)
                 })
                 .catch(e => {
                     setFeedback('Please insert valid data')
                     console.error(e.message)
                 })
+              
         }
     }
 
     return (
-        <>
-            {musician === undefined ?
+        <>  
+            {error? 
+            <NotFound/>
+            :
+             <>
+             {
+            musician === undefined ?
                 <h1>Loading...</h1>
                 :
                 <>
@@ -120,6 +136,9 @@ export default () => {
                     </section>
                 </>
             }
+             </> 
+        }
+            
         </>
 
     )

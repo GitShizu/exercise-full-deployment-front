@@ -105,15 +105,12 @@
                         border-color: rgba(63, 66, 66, 0.5);
                     }
                 }
-            }
-
-            // .feedback {
-            //     display: grid;
-            //     place-content: center;
-            //     width: 100%;
-            //     font-size: 1.25rem;
-            //     color: rgb(3, 180, 180);
-            // }
+            }    
         }
+    }
+    .not-found{
+        height: 60vh;
+        display: grid;
+        place-content: center;
     }
 }

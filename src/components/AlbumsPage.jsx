@@ -139,7 +139,6 @@ export default () => {
                         onClick={() => {
                             addAlbum(formData)
                             setFormData(blankFormData)
-                            console.log(albums);
                         }}
                     >Add</button>
                     <div>

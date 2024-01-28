@@ -5,13 +5,13 @@ const { VITE_API_URL } = import.meta.env
 export default () => {
 
     const [musicians, setMusicians] = useState([])
-    const [formData, setFormData] = useState({
+    const blankFormData = {
         stageName: '',
         firstName: '',
         lastName: '',
         birthDate: ''
-    })
-
+    }
+    const [formData, setFormData] = useState(blankFormData)
     const [feedback, setFeedback] = useState();
     const [refresh, setRefresh] = useState(true)
     useEffect(() => {
@@ -101,7 +101,7 @@ export default () => {
                                 ...formData,
                                 lastName: e.target.value
                             })}
-                            value={formData.duration_seconds}
+                            value={formData.lastName}
                             type="text" />
                     </label>
                     <label ><b>Birth date</b>
@@ -114,7 +114,11 @@ export default () => {
                             type="date" />
                     </label>
                     <button
-                        onClick={() => { addMusician(formData) }}
+                        onClick={() => { 
+                            addMusician(formData) 
+                            setFormData(blankFormData)
+                        }}
+                            
                     >Add</button>
                     <div>
                         {feedback}
