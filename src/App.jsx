@@ -7,27 +7,48 @@ import MusiciansPage from './components/MusiciansPage'
 import AlbumDetails from './components/AlbumDetails'
 import MusicianDetails from './components/MusicianDetails'
 import NotFound from './components/NotFound'
+import SignUser from './components/SignUser'
+import { useUser } from '../context/UserContext'
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const { user } = useUser()
 
   return (
     <section className='app-wrapper'>
       <nav>
         <menu>
-          <li>
-            <NavLink className={'navlink'} to={'/'} element={<HomePage />} >Home</NavLink>
-          </li>
-          <li>
-            <NavLink className={'navlink'} to={'/albums'} element={<AlbumsPage />} >Albums</NavLink>
-          </li>
-          <li>
-            <NavLink className={'navlink'} to={'/musicians'} element={<MusiciansPage />} >Musicians</NavLink>
-          </li>
+          {user &&
+            <>
+              <li>
+                <NavLink className={'navlink'} to={'/'} element={<HomePage />} >Home</NavLink>
+              </li>
+              <li>
+                <NavLink className={'navlink'} to={'/albums'} element={<AlbumsPage />} >Albums</NavLink>
+              </li>
+              <li>
+                <NavLink className={'navlink'} to={'/musicians'} element={<MusiciansPage />} >Musicians</NavLink>
+              </li>
+            </>
+
+          }
+          {!user &&
+            <>
+              <li>
+                <NavLink className={'navlink'} to={'/signup'} element={<SignUser type='signup' />} >Sign Up</NavLink>
+              </li>
+              <li>
+                <NavLink className={'navlink'} to={'/login'} element={<SignUser type='login' />} >Log In</NavLink>
+              </li>
+            </>}
+
+
         </menu>
       </nav>
       <Routes>
         <Route path={'/'} element={<HomePage />} />
+        <Route path={'/signup'} element={<SignUser type='signup' />} />
+        <Route path={'/login'} element={<SignUser type='login' />} />
         <Route path={'/musicians'} >
           <Route index element={<MusiciansPage />} />
           <Route path={':slug'} element={<MusicianDetails />} />

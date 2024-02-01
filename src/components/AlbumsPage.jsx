@@ -55,10 +55,10 @@ export default () => {
                 setRefresh(!refresh)
             }).catch(e => console.error(e.message))
     }
-
     return (
         <section >
             <section className="page">
+                
                 {albums === undefined &&
                     <p>Loading...</p>
                 }
