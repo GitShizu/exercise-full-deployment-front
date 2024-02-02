@@ -3,9 +3,11 @@ import { useState } from "react";
 import { useUser } from "../../context/UserContext";
 const { VITE_API_URL } = import.meta.env;
 
-const { logIn, signUp, error, loading } = useUser();
+
 
 export default ({ type }) => {
+
+    const { logIn, signUp, error, loading } = useUser();
 
     const title = type === 'login' ? 'Log In' : 'Sign Up';
     const [formData, setFormData] = useState({
