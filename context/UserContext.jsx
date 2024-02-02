@@ -2,16 +2,19 @@ import axios from "axios";
 import { createContext, useContext, useState } from "react";
 const { VITE_API_URL } = import.meta.env;
 
+
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-
+    
     const [user, setUser] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const signUp = async ({ email, password, password2 }) => {
+    const signUp = async ( props ) => {
         if (loading) return;
+
+        const {email, password, password2} = props
 
         setError(null);
         setLoading(true);
@@ -20,7 +23,7 @@ export const UserProvider = ({ children }) => {
             throw new Error("Password doesn't match")
         }
         try {
-            const { data: user } = await axios.post(`${VITE_API_URL}/signup`, {
+            const { data: user } = await axios.post(`${VITE_API_URL}/auth/signup`, {
                 email,
                 password
             })
@@ -30,17 +33,20 @@ export const UserProvider = ({ children }) => {
             setError(error.message);
         } finally {
             setLoading(false)
+
         }
     }
 
-    const logIn = async (email, password) => {
+    const logIn = async (props) => {
         if (loading) return;
+
+        const {email, password} = props
 
         setError(null);
         setLoading(true);
 
         try {
-            const { data: user } = await axios.post(`${VITE_API_URL}/signup`, {
+            const { data: user } = await axios.post(`${VITE_API_URL}/auth/login`, {
                 email,
                 password
             })

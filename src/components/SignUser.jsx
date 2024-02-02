@@ -1,7 +1,6 @@
-import axios from "axios";
 import { useState } from "react";
 import { useUser } from "../../context/UserContext";
-const { VITE_API_URL } = import.meta.env;
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -16,15 +15,16 @@ export default ({ type }) => {
         password2: ''
     })
 
-    const { email, password } = formData;
+    const navigate = useNavigate()
 
-    const signUser = (e) => {
+    const signUser =  (e) => {
         e.preventDefault()
         if (type == 'login') {
-            logIn(email, password)
+             logIn(formData)
         } else {
-            signUp(formData)
+             signUp(formData)
         }
+        navigate('/')
     }
 
     return (
