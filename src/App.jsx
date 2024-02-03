@@ -14,6 +14,7 @@ function App() {
 
   const { user } = useUser()
 
+
   return (
     <section className='app-wrapper'>
       <nav>
@@ -30,7 +31,6 @@ function App() {
                 <NavLink className={'navlink'} to={'/musicians'} element={<MusiciansPage />} >Musicians</NavLink>
               </li>
             </>
-
           }
           {!user &&
             <>
@@ -41,10 +41,9 @@ function App() {
                 <NavLink className={'navlink'} to={'/login'} element={<SignUser type='login' />} >Log In</NavLink>
               </li>
             </>}
-
-
         </menu>
       </nav>
+
       <Routes>
         <Route path={'/'} element={<HomePage />} />
         <Route path={'/signup'} element={<SignUser type='signup' />} />

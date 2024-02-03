@@ -1,10 +1,16 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { useUser } from "../../context/UserContext"
+import { axiosHeaders } from "../../libraries/utilities"
 const { VITE_API_URL } = import.meta.env
+
 export default () => {
 
+    const {token} = useUser();
+
     const [musicians, setMusicians] = useState([])
+    const [error, setError] = useState()
     const blankFormData = {
         stageName: '',
         firstName: '',
@@ -15,14 +21,16 @@ export default () => {
     const [feedback, setFeedback] = useState();
     const [refresh, setRefresh] = useState(true)
     useEffect(() => {
-        axios.get(`${VITE_API_URL}/musicians`)
+        axios.get(`${VITE_API_URL}/musicians`, axiosHeaders(token))
             .then(obj => setMusicians(obj.data)
             )
-            .catch(e => console.error(e))
+            .catch(e => {
+                setError(e.response.data)
+                console.error(e)})
     }, [refresh])
 
     const addMusician = (body) => {
-        axios.post(`${VITE_API_URL}/musicians`, body)
+        axios.post(`${VITE_API_URL}/musicians`, body, axiosHeaders(token))
             .then(() => {
                 setRefresh(!refresh)
                 setFeedback('Musician added successfully')
@@ -34,47 +42,52 @@ export default () => {
     }
 
     const deleteMusician = (slug) => {
-        axios.delete(`${VITE_API_URL}/musicians/${slug}`)
+        axios.delete(`${VITE_API_URL}/musicians/${slug}`, axiosHeaders(token))
             .then(() => {
                 setFeedback('Musician deleted successfully')
                 setRefresh(!refresh)
             }).catch(e => console.error(e.message))
     }
-
+    
     return (
         <section >
             <section className="page">
-                {musicians === undefined && <p>Loading...</p>}
-                {musicians.length < 1 ?
-                    <p>No musicians found</p>
+                {error ?
+                    <p>{error}</p>
                     :
+                    <>
+                        {musicians === undefined && <p>Loading...</p>}
+                        {musicians.length < 1 ?
+                            <p>No musicians found</p>
+                            :
 
-                    <div className="list">
-                        <h2>musicians list</h2>
-                        <ul>
-                            {musicians.map((m, i) => {
-                                return (
-                                    <li key={i}>
-                                        <Link
-                                            to={`/musicians/${m.slug}`}
-                                            className={'link'}>
-                                            {`${m.stageName} | ${m.albums.map(a => a.title)}`}
-                                        </Link>
-                                        <button
-                                            className="remove_btn"
-                                            onClick={() => {
-                                                deleteMusician(m.slug)
-                                            }}
-                                        >Remove</button>
-                                    </li>
-                                )
+                            <div className="list">
+                                <h2>musicians list</h2>
+                                <ul>
+                                    {musicians.map((m, i) => {
+                                        return (
+                                            <li key={i}>
+                                                <Link
+                                                    to={`/musicians/${m.slug}`}
+                                                    className={'link'}>
+                                                    {`${m.stageName} | ${m.albums.map(a => a.title)}`}
+                                                </Link>
+                                                <button
+                                                    className="remove_btn"
+                                                    onClick={() => {
+                                                        deleteMusician(m.slug)
+                                                    }}
+                                                >Remove</button>
+                                            </li>
+                                        )
 
-                            })}
-                        </ul>
-                    </div>
+                                    })}
+                                </ul>
+                            </div>
 
 
-                }
+                        }
+                    </>}
                 <div className="add-new">
                     <h2>Add new musician</h2>
                     <label> <b>Stage Name</b>
@@ -114,11 +127,11 @@ export default () => {
                             type="date" />
                     </label>
                     <button
-                        onClick={() => { 
-                            addMusician(formData) 
+                        onClick={() => {
+                            addMusician(formData)
                             setFormData(blankFormData)
                         }}
-                            
+
                     >Add</button>
                     <div>
                         {feedback}

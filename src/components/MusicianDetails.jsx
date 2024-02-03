@@ -3,9 +3,13 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import NotFound from "./NotFound";
+import { useUser } from "../../context/UserContext";
+import { axiosHeaders } from "../../libraries/utilities";
 const { VITE_API_URL } = import.meta.env;
 
 export default () => {
+
+    const {token} = useUser();
 
     const { slug } = useParams()
     const [musician, setMusician] = useState()
@@ -22,7 +26,7 @@ export default () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        axios.get(`${VITE_API_URL}/musicians/${slug}`)
+        axios.get(`${VITE_API_URL}/musicians/${slug}`, axiosHeaders(token))
             .then(obj => {
                 setMusician(obj.data)
                 console.log(obj)
@@ -42,7 +46,7 @@ export default () => {
         })
         if (Object.keys(validProps).length > 0) {
 
-            axios.patch(`${VITE_API_URL}/musicians/${slug}`, validProps)
+            axios.patch(`${VITE_API_URL}/musicians/${slug}`, validProps, axiosHeaders(token))
                 .then((obj) => {
                     setFeedback('Musician updated successfully')
                     setMusician(obj.data)

@@ -6,15 +6,27 @@ const { VITE_API_URL } = import.meta.env;
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
+
+    const storedData = localStorage.getItem('data');
+
+    const [data, setData] = useState(
+        storedData ?
+            JSON.parse(storedData)
+            : null
+    )
     
-    const [user, setUser] = useState(null);
+    const changeData = (newData)=>{
+        setData(newData);
+        localStorage.setItem('data', JSON.stringify(newData))
+    }
+
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const signUp = async ( props ) => {
+    const signUp = async (props) => {
         if (loading) return;
 
-        const {email, password, password2} = props
+        const { email, password, password2 } = props
 
         setError(null);
         setLoading(true);
@@ -23,11 +35,11 @@ export const UserProvider = ({ children }) => {
             throw new Error("Password doesn't match")
         }
         try {
-            const { data: user } = await axios.post(`${VITE_API_URL}/auth/signup`, {
+            const { data } = await axios.post(`${VITE_API_URL}/auth/signup`, {
                 email,
                 password
             })
-            setUser(user)
+            changeData(data);
         } catch (error) {
             console.error(error)
             setError(error.message);
@@ -40,17 +52,17 @@ export const UserProvider = ({ children }) => {
     const logIn = async (props) => {
         if (loading) return;
 
-        const {email, password} = props
+        const { email, password } = props
 
         setError(null);
         setLoading(true);
 
         try {
-            const { data: user } = await axios.post(`${VITE_API_URL}/auth/login`, {
+            const { data } = await axios.post(`${VITE_API_URL}/auth/login`, {
                 email,
                 password
             })
-            setUser(user)
+            changeData(data);
         } catch (error) {
             console.error(error);
             setError(error.message);
@@ -60,7 +72,7 @@ export const UserProvider = ({ children }) => {
     }
 
     const value = {
-        user,
+        ...data,
         logIn,
         signUp,
         error,

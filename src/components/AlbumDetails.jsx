@@ -2,8 +2,12 @@ import axios from "axios";
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import NotFound from "./NotFound";
+import { axiosHeaders } from "../../libraries/utilities";
+import { useUser } from "../../context/UserContext";
 const { VITE_API_URL } = import.meta.env;
 export default () => {
+    
+    const {token} = useUser()
 
     const { slug } = useParams()
     const [album, setAlbum] = useState()
@@ -20,7 +24,7 @@ export default () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        axios.get(`${VITE_API_URL}/albums/${slug}`)
+        axios.get(`${VITE_API_URL}/albums/${slug}`, axiosHeaders(token))
             .then(obj => setAlbum(obj.data))
             .catch((e) => {
                 console.log(e.message)
@@ -29,7 +33,7 @@ export default () => {
     }, [refresh])
 
     useEffect(() => {
-        axios.get(`${VITE_API_URL}/musicians`)
+        axios.get(`${VITE_API_URL}/musicians`, axiosHeaders(token))
             .then(obj => setMusicians(obj.data)
             )
             .catch(e => console.error(e))
@@ -44,7 +48,7 @@ export default () => {
         })
         if (Object.keys(validProps).length > 0) {
 
-            axios.patch(`${VITE_API_URL}/albums/${slug}`, validProps)
+            axios.patch(`${VITE_API_URL}/albums/${slug}`, validProps, axiosHeaders(token))
                 .then((obj) => {
                     setFeedback('Album updated successfully')
                     setAlbum(obj.data)
