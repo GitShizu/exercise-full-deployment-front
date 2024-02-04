@@ -86,7 +86,7 @@ export default () => {
                             <p>Loading...</p>
                             :
                             <>
-                                {albums?.length < 1 ?
+                                {albums.length < 1 ?
                                     <p>No albums were found</p>
                                     :
                                     <div className="list">

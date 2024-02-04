@@ -1,16 +1,17 @@
 import axios from "axios";
 import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import NotFound from "./NotFound";
 import { axiosHeaders } from "../../libraries/utilities";
 import { useUser } from "../../context/UserContext";
 const { VITE_API_URL } = import.meta.env;
 export default () => {
-    
-    const {token} = useUser()
+
+    const { token } = useUser()
 
     const { slug } = useParams()
     const [album, setAlbum] = useState()
+    const [relatedAlbums, setRelatedAlbums] = useState();
     const blankFormData = {
         title: '',
         musician: '',
@@ -25,17 +26,32 @@ export default () => {
 
     useEffect(() => {
         axios.get(`${VITE_API_URL}/albums/${slug}`, axiosHeaders(token))
-            .then(obj => setAlbum(obj.data))
+            .then(obj => {
+                // console.log(obj);
+                setAlbum(obj.data)
+            })
             .catch((e) => {
                 console.log(e.message)
                 setError(true)
             })
     }, [refresh])
 
+
+    useEffect(() => {
+        if (album) {
+            axios.get(`${VITE_API_URL}/musicians/${album.musician.slug}`, axiosHeaders(token))
+                .then((obj) => {
+                    console.log(obj.data)
+                    setRelatedAlbums(obj.data.albums)
+                }
+                )
+        }
+
+    }, [album])
+
     useEffect(() => {
         axios.get(`${VITE_API_URL}/musicians`, axiosHeaders(token))
-            .then(obj => setMusicians(obj.data)
-            )
+            .then(obj => setMusicians(obj.data))
             .catch(e => console.error(e))
     }, [])
 
@@ -134,6 +150,21 @@ export default () => {
                                     {feedback}
                                 </div>
                             </div>
+                            <br />
+                            <h3>Albums:</h3>
+                            <ul>
+                                {relatedAlbums?.map(a => {
+                                    return (
+                                        <Link
+                                            key={a._id}
+                                            to={`/albums/${a.slug}`}>
+                                            <li>
+                                                <p>{a.title}</p>
+                                            </li>
+                                        </Link>
+                                    )
+                                })}
+                            </ul>
                         </>
                     }
                 </>
